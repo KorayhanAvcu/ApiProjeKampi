@@ -84,7 +84,15 @@ namespace ApiProjeKampi.WebApi.Controllers
             _context.SaveChanges();
             return Ok("Ekleme işlemii basarili");
         }
+        [HttpPut("UpdateProductWithCategory")]
+        public IActionResult UpdateProduct(UpdateProductDto updateProductDto)
+        {
 
+            var value = _mapper.Map<Product>(updateProductDto);
+            _context.Products.Update(value);
+            _context.SaveChanges();
+            return Ok("Güncelleme işlemii basarili");
+        }
         [HttpGet("ProductListWithCategory")]
         public IActionResult ProductListWithCategory()
         {

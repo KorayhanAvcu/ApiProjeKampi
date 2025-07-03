@@ -74,9 +74,27 @@ namespace ApiProjeKampi.WebUI.Controllers
         public async Task<IActionResult> UpdateProduct(int id)
         {
             var client = _httpClientFactory.CreateClient();
-            var responseMessage = await client.GetAsync("https://localhost:7000/api/Products/GetProducts?id=" + id);
+            var responseMessage = await client.GetAsync("https://localhost:7000/api/Products/GetProduct?id=" + id);
             var jsonData = await responseMessage.Content.ReadAsStringAsync();
             var value = JsonConvert.DeserializeObject<GetProductByIdDto>(jsonData);
+
+            var categoryResponse = await client.GetAsync("https://localhost:7000/api/Categories");
+
+
+            var categoryJson = await categoryResponse.Content.ReadAsStringAsync();
+            var categories = JsonConvert.DeserializeObject<List<ResultCategoryDto>>(categoryJson) ?? new List<ResultCategoryDto>();
+
+            // Güvenli karşılaştırma: value null olabilir diye önce kontrol ettik
+            var categoryValue = categories.Select(x => new SelectListItem
+            {
+                Text = x.CategoryName,
+                Value = x.CategoryId.ToString(),
+                Selected = value != null && x.CategoryId == value.CategoryId
+            }).ToList();
+
+            ViewBag.v = categoryValue;
+
+
             return View(value);
         }
 
@@ -86,7 +104,7 @@ namespace ApiProjeKampi.WebUI.Controllers
             var client = _httpClientFactory.CreateClient();
             var jsonData = JsonConvert.SerializeObject(updateProductDto);
             StringContent stringContent = new StringContent(jsonData, Encoding.UTF8, "application/json");
-            await client.PutAsync("https://localhost:7000/api/Products/", stringContent);
+            await client.PutAsync("https://localhost:7000/api/Products/UpdateProductWithCategory", stringContent);
             return RedirectToAction("ProductList");
         }
     }
