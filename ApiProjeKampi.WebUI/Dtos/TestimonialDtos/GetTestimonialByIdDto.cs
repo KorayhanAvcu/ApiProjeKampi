@@ -1,6 +1,6 @@
 ﻿namespace ApiProjeKampi.WebUI.Dtos.TestimonialDtos
 {
-    public class ResultTestimonialDto
+    public class GetTestimonialByIdDto
     {
         public int testimonialId { get; set; }
         public string NameSurname { get; set; }
